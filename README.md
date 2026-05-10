@@ -4,8 +4,8 @@ Portable, minimal coding-agent setup for multi-IDE and multi-model workflows.
 
 ## What This Repo Provides
 
-- Canonical policy file: `AGENT.md`
-- Compatibility shims: `AGENTS.md`, `CLAUDE.md`, `CURSOR.md`, `.cursorrules`
+- Canonical policy file: `AGENTS.md`
+- Compatibility shims: `AGENT.md`, `CLAUDE.md`, `CURSOR.md`, `.cursorrules`
 - Canonical skills source: `docs/ai/skills/`
 - Trae adapter sync script: `scripts/generate_trae_adapter.sh`
 - Project bootstrap script: `scripts/bootstrap.sh`
@@ -33,8 +33,8 @@ Also generate Trae runtime adapter (`.trae/skills`) in target repo:
 
 What bootstrap copies:
 
-- `AGENT.md`
 - `AGENTS.md`
+- `AGENT.md`
 - `CLAUDE.md`
 - `CURSOR.md`
 - `.cursorrules`

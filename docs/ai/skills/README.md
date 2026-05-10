@@ -2,6 +2,7 @@
 
 This directory is the canonical source for reusable agent skills in this repository.
 It is model-agnostic and IDE-agnostic.
+Repository-level policy/instruction canonical file is `AGENTS.md` at repo root (`AGENT.md` is compatibility shim).
 
 ## Scope
 
