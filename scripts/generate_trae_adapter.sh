@@ -27,7 +27,7 @@ Canonical source of truth:
 
 To refresh this adapter, run:
 
-- ./scripts/sync_skills.sh
+- ./scripts/generate_trae_adapter.sh
 EOF
 
 echo "Synced skills:"

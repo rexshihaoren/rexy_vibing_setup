@@ -1,14 +1,69 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ $# -lt 1 ]]; then
-  echo "Usage: $0 <target-repo-path> [--with-trae]" >&2
+usage() {
+  echo "Usage: $0 <target-repo-path> [--with-trae]"
+}
+
+require_cmd() {
+  local cmd="$1"
+  if ! command -v "${cmd}" >/dev/null 2>&1; then
+    echo "Missing required command: ${cmd}" >&2
+    exit 1
+  fi
+}
+
+WITH_TRAE=false
+TARGET_PATH=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --with-trae)
+      WITH_TRAE=true
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    --*)
+      echo "Unknown option: $1" >&2
+      usage >&2
+      exit 1
+      ;;
+    *)
+      if [[ -n "${TARGET_PATH}" ]]; then
+        echo "Only one target repo path is allowed." >&2
+        usage >&2
+        exit 1
+      fi
+      TARGET_PATH="$1"
+      ;;
+  esac
+  shift
+done
+
+if [[ -z "${TARGET_PATH}" ]]; then
+  usage >&2
   exit 1
 fi
 
+require_cmd bash
+require_cmd cp
+require_cmd rsync
+
 SOURCE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-TARGET_ROOT="$(cd "$1" && pwd)"
-WITH_TRAE="${2:-}"
+mkdir -p "${TARGET_PATH}"
+TARGET_ROOT="$(cd "${TARGET_PATH}" && pwd)"
+
+if [[ "${TARGET_ROOT}" == "/" ]]; then
+  echo "Refusing to bootstrap into filesystem root (/)." >&2
+  exit 1
+fi
+
+if [[ ! -w "${TARGET_ROOT}" ]]; then
+  echo "Target path is not writable: ${TARGET_ROOT}" >&2
+  exit 1
+fi
 
 copy_file() {
   local src="$1"
@@ -17,27 +72,25 @@ copy_file() {
   cp "${src}" "${dst}"
 }
 
-copy_file "${SOURCE_ROOT}/AGENT.md" "${TARGET_ROOT}/AGENT.md"
-copy_file "${SOURCE_ROOT}/AGENTS.md" "${TARGET_ROOT}/AGENTS.md"
-copy_file "${SOURCE_ROOT}/CLAUDE.md" "${TARGET_ROOT}/CLAUDE.md"
-copy_file "${SOURCE_ROOT}/CURSOR.md" "${TARGET_ROOT}/CURSOR.md"
-copy_file "${SOURCE_ROOT}/.cursorrules" "${TARGET_ROOT}/.cursorrules"
+for file_name in AGENT.md AGENTS.md CLAUDE.md CURSOR.md .cursorrules; do
+  copy_file "${SOURCE_ROOT}/${file_name}" "${TARGET_ROOT}/${file_name}"
+done
 
 mkdir -p "${TARGET_ROOT}/docs/ai"
 rsync -a --delete "${SOURCE_ROOT}/docs/ai/skills/" "${TARGET_ROOT}/docs/ai/skills/"
 
 mkdir -p "${TARGET_ROOT}/scripts"
-copy_file "${SOURCE_ROOT}/scripts/sync_skills.sh" "${TARGET_ROOT}/scripts/sync_skills.sh"
-chmod +x "${TARGET_ROOT}/scripts/sync_skills.sh"
+copy_file "${SOURCE_ROOT}/scripts/generate_trae_adapter.sh" "${TARGET_ROOT}/scripts/generate_trae_adapter.sh"
+chmod +x "${TARGET_ROOT}/scripts/generate_trae_adapter.sh"
 
-if [[ "${WITH_TRAE}" == "--with-trae" ]]; then
+if [[ "${WITH_TRAE}" == "true" ]]; then
   mkdir -p "${TARGET_ROOT}/.trae/skills"
-  (cd "${TARGET_ROOT}" && ./scripts/sync_skills.sh)
+  (cd "${TARGET_ROOT}" && ./scripts/generate_trae_adapter.sh)
 fi
 
 echo "Bootstrap complete."
 echo "Target: ${TARGET_ROOT}"
-echo "Copied: AGENT files + docs/ai/skills + scripts/sync_skills.sh"
-if [[ "${WITH_TRAE}" == "--with-trae" ]]; then
+echo "Copied: AGENT files + docs/ai/skills + scripts/generate_trae_adapter.sh"
+if [[ "${WITH_TRAE}" == "true" ]]; then
   echo "Trae adapter generated at .trae/skills"
 fi

@@ -7,7 +7,7 @@ Portable, minimal coding-agent setup for multi-IDE and multi-model workflows.
 - Canonical policy file: `AGENT.md`
 - Compatibility shims: `AGENTS.md`, `CLAUDE.md`, `CURSOR.md`, `.cursorrules`
 - Canonical skills source: `docs/ai/skills/`
-- Trae adapter sync script: `scripts/sync_skills.sh`
+- Trae adapter sync script: `scripts/generate_trae_adapter.sh`
 - Project bootstrap script: `scripts/bootstrap.sh`
 
 ## Defaults Included
@@ -39,7 +39,7 @@ What bootstrap copies:
 - `CURSOR.md`
 - `.cursorrules`
 - `docs/ai/skills/`
-- `scripts/sync_skills.sh`
+- `scripts/generate_trae_adapter.sh`
 
 ## Working Model
 
@@ -47,7 +47,7 @@ What bootstrap copies:
 - If Trae adapter is needed, run:
 
 ```bash
-./scripts/sync_skills.sh
+./scripts/generate_trae_adapter.sh
 ```
 
 - `.trae/skills/` is generated adapter output and should not be edited manually.

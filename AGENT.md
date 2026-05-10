@@ -73,7 +73,7 @@ After the clear/safe section is complete, auto-resume caveman mode.
 
 Sync adapter targets from canonical source with:
 
-- `scripts/sync_skills.sh`
+- `scripts/generate_trae_adapter.sh`
 
 ## Priority Order
 
