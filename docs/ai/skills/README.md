@@ -37,7 +37,11 @@ When a user asks for a skill (explicitly or by intent), the agent should:
 
 ## Adapter Targets
 
-- Trae runtime target: `.trae/skills/`
 - Canonical source: `docs/ai/skills/`
+- Trae runtime target: `.trae/skills/`
+- Cursor runtime target: `.cursor/skills/`
 
-Use `scripts/generate_trae_adapter.sh` to refresh runtime adapters from canonical source.
+Use these scripts to refresh runtime adapters from canonical source:
+
+- `scripts/generate_trae_adapter.sh`
+- `scripts/generate_cursor_adapter.sh`
