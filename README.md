@@ -8,6 +8,7 @@ Portable, minimal coding-agent setup for multi-IDE and multi-model workflows.
 - Compatibility shims: `AGENT.md`, `CLAUDE.md`, `CURSOR.md`, `.cursorrules`
 - Canonical skills source: `docs/ai/skills/`
 - Trae adapter sync script: `scripts/generate_trae_adapter.sh`
+- Cursor adapter sync script: `scripts/generate_cursor_adapter.sh`
 - Project bootstrap script: `scripts/bootstrap.sh`
 
 ## Defaults Included
@@ -31,6 +32,18 @@ Also generate Trae runtime adapter (`.trae/skills`) in target repo:
 ./scripts/bootstrap.sh /absolute/path/to/target-repo --with-trae
 ```
 
+Also generate Cursor runtime adapter (`.cursor/skills`) in target repo:
+
+```bash
+./scripts/bootstrap.sh /absolute/path/to/target-repo --with-cursor
+```
+
+Flags can be combined:
+
+```bash
+./scripts/bootstrap.sh /absolute/path/to/target-repo --with-trae --with-cursor
+```
+
 What bootstrap copies:
 
 - `AGENTS.md`
@@ -40,6 +53,7 @@ What bootstrap copies:
 - `.cursorrules`
 - `docs/ai/skills/`
 - `scripts/generate_trae_adapter.sh`
+- `scripts/generate_cursor_adapter.sh`
 
 ## Working Model
 
@@ -50,7 +64,13 @@ What bootstrap copies:
 ./scripts/generate_trae_adapter.sh
 ```
 
-- `.trae/skills/` is generated adapter output and should not be edited manually.
+- If Cursor adapter is needed, run:
+
+```bash
+./scripts/generate_cursor_adapter.sh
+```
+
+- `.trae/skills/` and `.cursor/skills/` are generated adapter output and should not be edited manually.
 
 ## Credits
 

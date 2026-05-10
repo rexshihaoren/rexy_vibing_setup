@@ -2,7 +2,7 @@
 set -euo pipefail
 
 usage() {
-  echo "Usage: $0 <target-repo-path> [--with-trae]"
+  echo "Usage: $0 <target-repo-path> [--with-trae] [--with-cursor]"
 }
 
 require_cmd() {
@@ -14,12 +14,16 @@ require_cmd() {
 }
 
 WITH_TRAE=false
+WITH_CURSOR=false
 TARGET_PATH=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --with-trae)
       WITH_TRAE=true
+      ;;
+    --with-cursor)
+      WITH_CURSOR=true
       ;;
     -h|--help)
       usage
@@ -82,15 +86,25 @@ rsync -a --delete "${SOURCE_ROOT}/docs/ai/skills/" "${TARGET_ROOT}/docs/ai/skill
 mkdir -p "${TARGET_ROOT}/scripts"
 copy_file "${SOURCE_ROOT}/scripts/generate_trae_adapter.sh" "${TARGET_ROOT}/scripts/generate_trae_adapter.sh"
 chmod +x "${TARGET_ROOT}/scripts/generate_trae_adapter.sh"
+copy_file "${SOURCE_ROOT}/scripts/generate_cursor_adapter.sh" "${TARGET_ROOT}/scripts/generate_cursor_adapter.sh"
+chmod +x "${TARGET_ROOT}/scripts/generate_cursor_adapter.sh"
 
 if [[ "${WITH_TRAE}" == "true" ]]; then
   mkdir -p "${TARGET_ROOT}/.trae/skills"
   (cd "${TARGET_ROOT}" && ./scripts/generate_trae_adapter.sh)
 fi
 
+if [[ "${WITH_CURSOR}" == "true" ]]; then
+  mkdir -p "${TARGET_ROOT}/.cursor/skills"
+  (cd "${TARGET_ROOT}" && ./scripts/generate_cursor_adapter.sh)
+fi
+
 echo "Bootstrap complete."
 echo "Target: ${TARGET_ROOT}"
-echo "Copied: AGENT files + docs/ai/skills + scripts/generate_trae_adapter.sh"
+echo "Copied: AGENT files + docs/ai/skills + scripts/generate_trae_adapter.sh + scripts/generate_cursor_adapter.sh"
 if [[ "${WITH_TRAE}" == "true" ]]; then
   echo "Trae adapter generated at .trae/skills"
+fi
+if [[ "${WITH_CURSOR}" == "true" ]]; then
+  echo "Cursor adapter generated at .cursor/skills"
 fi

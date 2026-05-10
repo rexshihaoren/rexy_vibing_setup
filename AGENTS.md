@@ -32,6 +32,7 @@ This repo stores reusable skills in a model-agnostic canonical location:
 Runtime adapters may mirror from canonical source, for example:
 
 - Trae runtime path: `.trae/skills/`
+- Cursor runtime path: `.cursor/skills/`
 
 Use these skills when relevant:
 
@@ -74,6 +75,7 @@ After the clear/safe section is complete, auto-resume caveman mode.
 Sync adapter targets from canonical source with:
 
 - `scripts/generate_trae_adapter.sh`
+- `scripts/generate_cursor_adapter.sh`
 
 ## Priority Order
 
