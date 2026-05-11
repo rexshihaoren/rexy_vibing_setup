@@ -3,6 +3,10 @@ set -euo pipefail
 
 usage() {
   echo "Usage: $0 <target-repo-path> [--with-trae] [--with-cursor]"
+  echo ""
+  echo "Optional environment (for portable upgrades):"
+  echo "  REXY_VIBING_RECORD_REF   If set, writes .rexy-vibing-version (e.g. git tag or commit)."
+  echo "  REXY_VIBING_RECORD_REPO    GitHub owner/name (default: rexshihaoren/rexy_vibing_setup)."
 }
 
 require_cmd() {
@@ -84,10 +88,16 @@ mkdir -p "${TARGET_ROOT}/docs/ai"
 rsync -a --delete "${SOURCE_ROOT}/docs/ai/skills/" "${TARGET_ROOT}/docs/ai/skills/"
 
 mkdir -p "${TARGET_ROOT}/scripts"
+copy_file "${SOURCE_ROOT}/scripts/bootstrap.sh" "${TARGET_ROOT}/scripts/bootstrap.sh"
+chmod +x "${TARGET_ROOT}/scripts/bootstrap.sh"
 copy_file "${SOURCE_ROOT}/scripts/generate_trae_adapter.sh" "${TARGET_ROOT}/scripts/generate_trae_adapter.sh"
 chmod +x "${TARGET_ROOT}/scripts/generate_trae_adapter.sh"
 copy_file "${SOURCE_ROOT}/scripts/generate_cursor_adapter.sh" "${TARGET_ROOT}/scripts/generate_cursor_adapter.sh"
 chmod +x "${TARGET_ROOT}/scripts/generate_cursor_adapter.sh"
+copy_file "${SOURCE_ROOT}/scripts/install.sh" "${TARGET_ROOT}/scripts/install.sh"
+chmod +x "${TARGET_ROOT}/scripts/install.sh"
+copy_file "${SOURCE_ROOT}/scripts/rexy-vibing-update.sh" "${TARGET_ROOT}/scripts/rexy-vibing-update.sh"
+chmod +x "${TARGET_ROOT}/scripts/rexy-vibing-update.sh"
 
 if [[ "${WITH_TRAE}" == "true" ]]; then
   mkdir -p "${TARGET_ROOT}/.trae/skills"
@@ -99,9 +109,22 @@ if [[ "${WITH_CURSOR}" == "true" ]]; then
   (cd "${TARGET_ROOT}" && ./scripts/generate_cursor_adapter.sh)
 fi
 
+if [[ -n "${REXY_VIBING_RECORD_REF:-}" ]]; then
+  record_repo="${REXY_VIBING_RECORD_REPO:-rexshihaoren/rexy_vibing_setup}"
+  cat > "${TARGET_ROOT}/.rexy-vibing-version" <<EOF
+# Managed by rexy_vibing_setup (install.sh or bootstrap with version env).
+# Used by scripts/rexy-vibing-update.sh to know upstream repo and ref.
+REPO=${record_repo}
+REF=${REXY_VIBING_RECORD_REF}
+EOF
+fi
+
 echo "Bootstrap complete."
 echo "Target: ${TARGET_ROOT}"
-echo "Copied: AGENT files + docs/ai/skills + scripts/generate_trae_adapter.sh + scripts/generate_cursor_adapter.sh"
+echo "Copied: AGENT files + docs/ai/skills + scripts (bootstrap, generate_*, install, rexy-vibing-update)"
+if [[ -n "${REXY_VIBING_RECORD_REF:-}" ]]; then
+  echo "Recorded upstream pin: ${REXY_VIBING_RECORD_REPO:-rexshihaoren/rexy_vibing_setup}@${REXY_VIBING_RECORD_REF} -> .rexy-vibing-version"
+fi
 if [[ "${WITH_TRAE}" == "true" ]]; then
   echo "Trae adapter generated at .trae/skills"
 fi
