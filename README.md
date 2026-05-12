@@ -1,17 +1,15 @@
 # rexy_vibing_setup
 
-Portable, minimal coding-agent setup for multi-IDE and multi-model workflows.
+Minimal coding-agent setup for Trae and Cursor.
 
 ## What This Repo Provides
 
 - Canonical policy file: `AGENTS.md`
 - Compatibility shims: `AGENT.md`, `CLAUDE.md`, `CURSOR.md`, `.cursorrules`
 - Canonical skills source: `docs/ai/skills/`
-- Trae adapter sync script: `scripts/generate_trae_adapter.sh`
-- Cursor adapter sync script: `scripts/generate_cursor_adapter.sh`
-- Project bootstrap script: `scripts/bootstrap.sh`
-- Remote install script: `scripts/install.sh` (curl-friendly; pins upstream in `.rexy-vibing-version`)
-- In-repo updater: `scripts/rexy-vibing-update.sh` (re-bootstrap from a newer GitHub ref)
+- Trae adapter generator: `scripts/generate_trae_adapter.sh`
+- Cursor adapter generator: `scripts/generate_cursor_adapter.sh`
+- Per-project attach script: `scripts/attach.sh`
 
 ## Defaults Included
 
@@ -20,97 +18,74 @@ Portable, minimal coding-agent setup for multi-IDE and multi-model workflows.
 - Caveman safety exceptions and auto-resume behavior
 - Model-agnostic skill protocol for Codex, DeepSeek, Gemini, Claude
 
-## Remote install (portable)
+## Recommended Usage
 
-Install from GitHub into another repository (writes `.rexy-vibing-version` so you can update later):
-
-```bash
-curl -fsSL "https://raw.githubusercontent.com/rexshihaoren/rexy_vibing_setup/main/scripts/install.sh" | bash -s -- /absolute/path/to/target-repo
-```
-
-Install from a fork or a specific upstream ref (installer script can stay on upstream `main`):
+Keep one canonical clone on each machine:
 
 ```bash
-curl -fsSL "https://raw.githubusercontent.com/rexshihaoren/rexy_vibing_setup/main/scripts/install.sh" | bash -s -- /absolute/path/to/target-repo --repo myfork/rexy_vibing_setup --ref main
+git clone https://github.com/rexshihaoren/rexy_vibing_setup ~/rexy_vibing_setup
 ```
 
-Environment overrides (same semantics as flags): `REXY_VIBING_REPO`, `REXY_VIBING_REF`.
-
-## Update an existing install
-
-From the **target** repository root:
+Attach into any project:
 
 ```bash
-./scripts/rexy-vibing-update.sh --dry-run
-./scripts/rexy-vibing-update.sh --ref main
+~/rexy_vibing_setup/scripts/attach.sh /absolute/path/to/target-repo --ide both
 ```
 
-`-y` skips the confirmation prompt. Adapter folders (`.trae/skills`, `.cursor/skills`) are regenerated only if they already exist in the target repo.
-
-## Bootstrap Usage
-
-Copy this setup from a **local clone** of this repository into another repository:
+Only Trae:
 
 ```bash
-./scripts/bootstrap.sh /absolute/path/to/target-repo
+~/rexy_vibing_setup/scripts/attach.sh /absolute/path/to/target-repo --ide trae
 ```
 
-To record upstream metadata for `rexy-vibing-update.sh` when using local bootstrap:
+Only Cursor:
 
 ```bash
-REXY_VIBING_RECORD_REF="$(git rev-parse HEAD)" REXY_VIBING_RECORD_REPO="rexshihaoren/rexy_vibing_setup" \
-  ./scripts/bootstrap.sh /absolute/path/to/target-repo
+~/rexy_vibing_setup/scripts/attach.sh /absolute/path/to/target-repo --ide cursor
 ```
 
-Also generate Trae runtime adapter (`.trae/skills`) in target repo:
+Default `attach.sh` behavior:
+
+- If target root has none of `AGENTS.md`, `AGENT.md`, `CLAUDE.md`, `CURSOR.md`, `.cursorrules`, copy `AGENTS.md` plus all shims
+- If target root has any of them, copy none and print a skip message
+- Generate or refresh requested runtime adapters
+
+- `.trae/skills/`
+- `.cursor/skills/`
+
+These adapter directories should be ignored by git and not edited manually.
+
+## Update Flow
+
+Update canonical repo:
 
 ```bash
-./scripts/bootstrap.sh /absolute/path/to/target-repo --with-trae
+cd ~/rexy_vibing_setup
+git pull
 ```
 
-Also generate Cursor runtime adapter (`.cursor/skills`) in target repo:
+Re-attach into any project you want refreshed:
 
 ```bash
-./scripts/bootstrap.sh /absolute/path/to/target-repo --with-cursor
+~/rexy_vibing_setup/scripts/attach.sh /absolute/path/to/target-repo --ide both
 ```
 
-Flags can be combined:
+To skip policy-file copy entirely:
 
 ```bash
-./scripts/bootstrap.sh /absolute/path/to/target-repo --with-trae --with-cursor
+~/rexy_vibing_setup/scripts/attach.sh /absolute/path/to/target-repo --ide both --policy never
 ```
 
-What bootstrap copies:
+## Direct Generator Usage
 
-- `AGENTS.md`
-- `AGENT.md`
-- `CLAUDE.md`
-- `CURSOR.md`
-- `.cursorrules`
-- `docs/ai/skills/`
-- `scripts/bootstrap.sh`
-- `scripts/generate_trae_adapter.sh`
-- `scripts/generate_cursor_adapter.sh`
-- `scripts/install.sh`
-- `scripts/rexy-vibing-update.sh`
-- `.rexy-vibing-version` when `REXY_VIBING_RECORD_REF` is set (see above)
-
-## Working Model
-
-- Edit skills only in `docs/ai/skills/` (canonical).
-- If Trae adapter is needed, run:
+If you want to run generators directly:
 
 ```bash
-./scripts/generate_trae_adapter.sh
+./scripts/generate_trae_adapter.sh --target /absolute/path/to/target-repo
+./scripts/generate_cursor_adapter.sh --target /absolute/path/to/target-repo
 ```
 
-- If Cursor adapter is needed, run:
-
-```bash
-./scripts/generate_cursor_adapter.sh
-```
-
-- `.trae/skills/` and `.cursor/skills/` are generated adapter output and should not be edited manually.
+Edit skills only in `docs/ai/skills/`. Adapters are generated output.
 
 ## Credits
 
