@@ -22,6 +22,7 @@ require_cmd() {
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CANON_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 POLICY_FILES=(AGENTS.md AGENT.md CLAUDE.md CURSOR.md .cursorrules)
+SHIM_FILES=(AGENT.md CLAUDE.md CURSOR.md .cursorrules)
 
 TARGET_PATH=""
 IDE="both"
@@ -110,6 +111,34 @@ find_existing_policy_file() {
   return 1
 }
 
+find_existing_non_agents_policy_file() {
+  local file_name
+  for file_name in "${SHIM_FILES[@]}"; do
+    if [[ -e "${TARGET_ROOT}/${file_name}" ]]; then
+      echo "${file_name}"
+      return 0
+    fi
+  done
+  return 1
+}
+
+copy_missing_shims() {
+  local copied_any="false"
+  local file_name
+  for file_name in "${SHIM_FILES[@]}"; do
+    if [[ -e "${TARGET_ROOT}/${file_name}" ]]; then
+      continue
+    fi
+    cp "${CANON_ROOT}/${file_name}" "${TARGET_ROOT}/${file_name}"
+    copied_any="true"
+  done
+  if [[ "${copied_any}" == "true" ]]; then
+    echo "Existing policy file found (AGENTS.md); copying missing shims."
+  else
+    echo "Existing policy file found (AGENTS.md); shims already present."
+  fi
+}
+
 copy_policy_files_if_missing() {
   local existing_file
 
@@ -126,12 +155,17 @@ copy_policy_files_if_missing() {
       ;;
   esac
 
-  if existing_file="$(find_existing_policy_file)"; then
+  if [[ -e "${TARGET_ROOT}/AGENTS.md" ]]; then
+    copy_missing_shims
+    return 0
+  fi
+
+  if existing_file="$(find_existing_non_agents_policy_file)"; then
     echo "Existing policy file found (${existing_file}); skipped AGENTS/shims."
     return 0
   fi
 
-  echo "No policy files found; copying AGENTS/shims."
+  echo "No policy files found; copying AGENTS.md and shims."
   local file_name
   for file_name in "${POLICY_FILES[@]}"; do
     if [[ -e "${TARGET_ROOT}/${file_name}" ]]; then

@@ -62,7 +62,7 @@ rm -rf "${target}"
 attach_output="$(bash "${ROOT_DIR}/scripts/attach.sh" "${target}" --ide both)"
 assert_file "${target}/.trae/skills/caveman/SKILL.md"
 assert_file "${target}/.cursor/skills/caveman/SKILL.md"
-assert_contains "No policy files found; copying AGENTS/shims." <(printf "%s\n" "${attach_output}")
+assert_contains "No policy files found; copying AGENTS.md and shims." <(printf "%s\n" "${attach_output}")
 assert_contains "Creating Trae adapter." <(printf "%s\n" "${attach_output}")
 assert_contains "Creating Cursor adapter." <(printf "%s\n" "${attach_output}")
 for file_name in "${POLICY_FILES[@]}"; do
@@ -70,9 +70,21 @@ for file_name in "${POLICY_FILES[@]}"; do
 done
 
 attach_output="$(bash "${ROOT_DIR}/scripts/attach.sh" "${target}" --ide both)"
-assert_contains "Existing policy file found (AGENTS.md); skipped AGENTS/shims." <(printf "%s\n" "${attach_output}")
+assert_contains "Existing policy file found (AGENTS.md); shims already present." <(printf "%s\n" "${attach_output}")
 assert_contains "Refreshing Trae adapter." <(printf "%s\n" "${attach_output}")
 assert_contains "Refreshing Cursor adapter." <(printf "%s\n" "${attach_output}")
+
+rm -rf "${target}"
+mkdir -p "${target}"
+printf "project-owned\n" > "${target}/AGENTS.md"
+attach_output="$(bash "${ROOT_DIR}/scripts/attach.sh" "${target}" --ide trae)"
+assert_contains "Existing policy file found (AGENTS.md); copying missing shims." <(printf "%s\n" "${attach_output}")
+assert_contains "project-owned" "${target}/AGENTS.md"
+assert_file "${target}/AGENT.md"
+assert_file "${target}/CLAUDE.md"
+assert_file "${target}/CURSOR.md"
+assert_file "${target}/.cursorrules"
+assert_file "${target}/.trae/skills/caveman/SKILL.md"
 
 rm -rf "${target}"
 mkdir -p "${target}"

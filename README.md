@@ -47,7 +47,8 @@ Only Cursor:
 Default `attach.sh` behavior:
 
 - If target root has none of `AGENTS.md`, `AGENT.md`, `CLAUDE.md`, `CURSOR.md`, `.cursorrules`, copy `AGENTS.md` plus all shims
-- If target root has any of them, copy none and print a skip message
+- If target root already has `AGENTS.md`, copy any missing shims and do not overwrite `AGENTS.md`
+- If target root has any of `AGENT.md`, `CLAUDE.md`, `CURSOR.md`, `.cursorrules`, copy none and print a skip message
 - Generate or refresh requested runtime adapters
 
 - `.trae/skills/`
