@@ -31,9 +31,11 @@ Optional companion files (examples, templates, scripts) stay in the same directo
 When a user asks for a skill (explicitly or by intent), the agent should:
 
 1. Resolve skill name from request/intention.
-2. Read `docs/ai/skills/<skill-name>/SKILL.md`.
-3. Apply the skill instructions as higher-priority workflow guidance for the current task.
-4. Load companion files referenced by that skill when needed.
+2. Read `docs/ai/skills/<skill-name>/SKILL.md` if it exists.
+3. Otherwise read `.cursor/skills/<skill-name>/SKILL.md` if it exists.
+4. Otherwise read `.trae/skills/<skill-name>/SKILL.md` if it exists.
+5. Apply the skill instructions as higher-priority workflow guidance for the current task.
+6. Load companion files referenced by that skill when needed.
 
 ## Adapter Targets
 

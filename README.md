@@ -47,7 +47,8 @@ Only Cursor:
 Default `attach.sh` behavior:
 
 - If target root has none of `AGENTS.md`, `AGENT.md`, `CLAUDE.md`, `CURSOR.md`, `.cursorrules`, copy `AGENTS.md` plus all shims
-- If target root has any of them, copy none and print a skip message
+- If target root already has `AGENTS.md`, copy any missing shims and do not overwrite `AGENTS.md`
+- If target root has any of `AGENT.md`, `CLAUDE.md`, `CURSOR.md`, `.cursorrules`, copy none and print a skip message
 - Generate or refresh requested runtime adapters
 
 - `.trae/skills/`
@@ -85,7 +86,7 @@ If you want to run generators directly:
 ./scripts/generate_cursor_adapter.sh --target /absolute/path/to/target-repo
 ```
 
-Edit skills only in `docs/ai/skills/`. Adapters are generated output.
+Edit skills only in `docs/ai/skills/`. Agents should prefer that canonical path first, then fall back to `.cursor/skills/` or `.trae/skills/` only when the canonical path is absent. Adapters are generated output.
 
 ## Credits
 
