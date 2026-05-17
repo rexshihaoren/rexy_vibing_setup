@@ -51,9 +51,11 @@ These skills are intended to work regardless of model family (Codex, DeepSeek, G
 Portable protocol:
 
 1. Resolve requested skill from user intent or explicit name.
-2. Read `docs/ai/skills/<skill-name>/SKILL.md`.
-3. Apply that skill as task workflow guidance.
-4. Load any companion files referenced by that skill.
+2. Read `docs/ai/skills/<skill-name>/SKILL.md` if it exists.
+3. Otherwise read `.cursor/skills/<skill-name>/SKILL.md` if it exists.
+4. Otherwise read `.trae/skills/<skill-name>/SKILL.md` if it exists.
+5. Apply that skill as task workflow guidance.
+6. Load any companion files referenced by that skill.
 
 ## Default Skill Behavior
 

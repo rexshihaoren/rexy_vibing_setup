@@ -86,7 +86,7 @@ If you want to run generators directly:
 ./scripts/generate_cursor_adapter.sh --target /absolute/path/to/target-repo
 ```
 
-Edit skills only in `docs/ai/skills/`. Adapters are generated output.
+Edit skills only in `docs/ai/skills/`. Agents should prefer that canonical path first, then fall back to `.cursor/skills/` or `.trae/skills/` only when the canonical path is absent. Adapters are generated output.
 
 ## Credits
 

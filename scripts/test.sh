@@ -40,6 +40,10 @@ assert_exit_nonzero() {
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 POLICY_FILES=(AGENTS.md AGENT.md CLAUDE.md CURSOR.md .cursorrules)
 
+assert_contains "Read \`docs/ai/skills/<skill-name>/SKILL.md\` if it exists." "${ROOT_DIR}/AGENTS.md"
+assert_contains "Otherwise read \`.cursor/skills/<skill-name>/SKILL.md\` if it exists." "${ROOT_DIR}/AGENTS.md"
+assert_contains "Otherwise read \`.trae/skills/<skill-name>/SKILL.md\` if it exists." "${ROOT_DIR}/AGENTS.md"
+
 tmp="$(mktemp -d)"
 cleanup() { rm -rf "${tmp}"; }
 trap cleanup EXIT
@@ -68,6 +72,9 @@ assert_contains "Creating Cursor adapter." <(printf "%s\n" "${attach_output}")
 for file_name in "${POLICY_FILES[@]}"; do
   assert_file "${target}/${file_name}"
 done
+assert_contains "Read \`docs/ai/skills/<skill-name>/SKILL.md\` if it exists." "${target}/AGENTS.md"
+assert_contains "Otherwise read \`.cursor/skills/<skill-name>/SKILL.md\` if it exists." "${target}/AGENTS.md"
+assert_contains "Otherwise read \`.trae/skills/<skill-name>/SKILL.md\` if it exists." "${target}/AGENTS.md"
 
 attach_output="$(bash "${ROOT_DIR}/scripts/attach.sh" "${target}" --ide both)"
 assert_contains "Existing policy file found (AGENTS.md); shims already present." <(printf "%s\n" "${attach_output}")
